@@ -192,29 +192,30 @@ describe("myFunc()", () => {
 ``TDD``의 작업 흐름은 다음과 같습니다.
 
 1. 구현할 함수명 정의
-  ```javascript
-    function mySum() { }
-  ```
+    ```javascript
+      function mySum() { }
+    ```
 
 2. 구현할 함수에 대한 ``테스트 코드`` 작성
-  ```javascript
-    const wish = require("wish");
-  
-    describe("mySum()", () => {
-      it("두 인자의 합", () => {
-        wish(mySum(1, 2) === 3);
+    ```javascript
+      const wish = require("wish");
+    
+      describe("mySum()", () => {
+        it("두 인자의 합", () => {
+          wish(mySum(1, 2) === 3);
+        });
       });
-    });
-  ```
+    ```
 
 3. ``mySum()``함수에는 인자를 받지도 않고, 반환도 하지 않는 상태이므로, 테스트 실패가 됩니다. (적색 상태)
 
 4. ``mySum()``함수가 테스트를 통과하도록 ``mySum()``을 구현 합니다.
-  ```javascript
-    function mySum(a, b) {
-      return a + b;
-    }
-  ```
+
+    ```javascript
+      function mySum(a, b) {
+        return a + b;
+      }
+    ```
 
 5. 다시 테스트를 실행하면, 테스트에 통과하게 됩니다.
 
@@ -236,15 +237,13 @@ describe("myFunc()", () => {
 
 ``wish`` 라이브러리를 사용하면, 두번째 인자에 ``true``를 넣어 ``특성화 테스트(Characterization Test)`` 모드로 실행할 수 있습니다.
 
-실행하면 검사대상의 실제 값을 메시지로 알려주며, 확인 후 해당 ``특성화 테스트(Characterization Test)``는 주석처리 합니다.
-
-이유는, ``특성화 테스트(Characterization Test)``는 테스트 통과 개념이 아닌 확인 개념이기 때문입니다.
+실행하면 검사대상의 실제 값을 메시지로 알려주며, 확인한 실제 값은 ``특성화 테스트(Characterization Test)``의 두번째 인자로 변경 합니다.
 
 ```javascript
 // 특성화 테스트 실시
 describe("mySum()", () => {
   it("특성화 테스트", () => {
-    wish(mySum(), true);
+    wish(mySum(1, 2), true); // 테스트 메시지로 3 확인
   });
 });
 ```
@@ -252,12 +251,11 @@ describe("mySum()", () => {
 <br/>
 
 ```javascript
-// 특성화 테스트 주석처리 및
-// 실제 테스트 실행
+// 특성화 테스트의 확인결과를 적용
 describe("mySum()", () => {
-  // it("특성화 테스트", () => {
-  //   wish(mySum(), true);
-  // });
+  it("특성화 테스트", () => {
+    wish(mySum(1, 2), 3);
+  });
 
   it("1 + 2", () => {
     wish(mySum(1, 2) === 3);
@@ -276,4 +274,21 @@ describe("mySum()", () => {
 
 
 ##### 05
-## 05.
+## 05. 테스트 주도 개발(TDD) 정리
+
+테스트 주도 개발은 ``적색/녹색/리펙토링`` 단계를 주기로 개발하는 방법 입니다.
+
+테스트를 하는 주 목족은 ``코드에 대한 확신``을 얻기 위함 입니다.
+
+1. 테스트 코드 작성 (적색 단계)
+2. 테스트 코드에 통과하는 코드 작성 (녹색 단계)
+3. 리펙토링
+
+<br/>
+
+테스트를 거치지 않은 코드를 새롭게 테스트 할 때는 ``특성화 테스트(Characterization Test)``를 작성 합니다.
+
+<br/>
+
+버그를 수정할 때는 ``회귀 테스트``를 작성하여, 버그를 재현하여 정확한 현상을 파악한 후, 해당 기능을 변경 또는 추가 하여 해결 합니다.
+
