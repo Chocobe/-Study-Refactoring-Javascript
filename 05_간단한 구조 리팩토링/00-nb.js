@@ -110,34 +110,40 @@ function setProbabilitiesOfChordsInLabels() {
   });
 }
 
-train(imagine, "easy");
-train(somwhereOverTheRainbow, "easy");
-train(tooManyCooks, "easy");
+const easy = "easy";
+const medium = "medium";
+const hard = "hard";
 
-train(iWillFollowYouIntoTheDark, "medium");
-train(babyOneMoreTime, "medium");
-train(creep, "medium");
+train(imagine, easy);
+train(somwhereOverTheRainbow, easy);
+train(tooManyCooks, easy);
 
-train(paperBag, "hard");
-train(toxic, "hard");
-train(bulletproof, "hard");
+train(iWillFollowYouIntoTheDark, medium);
+train(babyOneMoreTime, medium);
+train(creep, medium);
+
+train(paperBag, hard);
+train(toxic, hard);
+train(bulletproof, hard);
 
 setLabelProbabilities();
 setChordCountsInLabels();
 setProbabilitiesOfChordsInLabels();
 
 function classify(chords) {
+  const SMOOTHING = 1.01;
+  
   console.log(labelProbabilities);
 
   const classified = {};
 
   Object.keys(labelProbabilities).forEach(difficulty => {
-    let first = labelProbabilities[difficulty] + 1.01;
+    let first = labelProbabilities[difficulty] + SMOOTHING;
     chords.forEach(chord => {
       const probabilityOfChordInLabel = probabilityOfChordsInLabels[difficulty][chord];
 
       if(probabilityOfChordInLabel) {
-        first = first * (probabilityOfChordInLabel + 1.01);
+        first = first * (probabilityOfChordInLabel + SMOOTHING);
       }
     });
 
