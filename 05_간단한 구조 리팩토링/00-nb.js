@@ -23,7 +23,7 @@ toxic = ["cm", "eb", "g", "cdim", "eb7", "d7", "db7", "ab", "gmaj7", "g7"];
 
 bulletproof = ["d#m", "g#", "b", "f#", "g#m", "c#"];
 
-song_11 = [];
+blankSong = [];
 
 // 노래 목록
 // [난이도, 코드Array]로 구성된 배열
@@ -134,12 +134,12 @@ setChordCountsInLabels();
 setProbabilitiesOfChordsInLabels();
 
 function classify(chords) {
-  const ttal = labelProbabilities;
-  console.log(ttal);
+  const total = labelProbabilities;
+  console.log(total);
 
   const classified = {};
 
-  Object.keys(ttal).forEach(label => {
+  Object.keys(total).forEach(label => {
     let first = labelProbabilities[label] + 1.01;
     chords.forEach(chord => {
       const probabilityOfChordInLabel = probabilityOfChordsInLabels[label][chord];
