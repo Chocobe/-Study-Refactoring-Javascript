@@ -5,7 +5,7 @@ fs = require("fs");
 
 imagine = ["c", "cmaj7", "f", "am", "dm", "g", "e7"];
 
-somewhere_over_the_rainbow = ["c", "em", "f", "g", "am"];
+somwhereOverTheRainbow = ["c", "em", "f", "g", "am"];
 
 tooManyCooks = ["c", "g", "f"];
 
@@ -56,10 +56,10 @@ function train(chords, label) {
   // 레이블 추가
   labels.push(label);
 
-  for(let i = 0; i < chords.length; i++) {
+  for(let index = 0; index < chords.length; index++) {
     // 새로운 코드일 경우 코드 추가
-    if(!allChords.includes(chords[i])) {
-      allChords.push(chords[i]);
+    if(!allChords.includes(chords[index])) {
+      allChords.push(chords[index]);
     }
   }
 
@@ -109,16 +109,16 @@ function setChordCountsInLabels() {
 function setProbabilitiesOfChordsInLabels() {
   probabilityOfChordsInLabels = chordCountsInLabels;
 
-  Object.keys(probabilityOfChordsInLabels).forEach(label => {
-    Object.keys(probabilityOfChordsInLabels[label]).forEach(chord => {
-      probabilityOfChordsInLabels[label][chord] = 
-        probabilityOfChordsInLabels[label][chord] * 1.0 / songs.length;
+  Object.keys(probabilityOfChordsInLabels).forEach(difficulty => {
+    Object.keys(probabilityOfChordsInLabels[difficulty]).forEach(chord => {
+      probabilityOfChordsInLabels[difficulty][chord] = 
+        probabilityOfChordsInLabels[difficulty][chord] * 1.0 / songs.length;
     });
   });
 }
 
 train(imagine, "easy");
-train(somewhere_over_the_rainbow, "easy");
+train(somwhereOverTheRainbow, "easy");
 train(tooManyCooks, "easy");
 
 train(iWillFollowYouIntoTheDark, "medium");
