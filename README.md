@@ -609,3 +609,40 @@ function getTotal() {
 ```
 
 위의 ``getTotal()``함수는 ``myList``의 요소개수를 반환하는데, 이는 ``myList.length``의 변수와 동일한 역할만 하므로, 결론적으로 ``함수 결과가 변수로 설정되는 것``입니다.
+
+
+<br/><br/>
+
+
+### 07-09. ``캐싱 변수`` 도입
+
+특정 함수에 의해 반환된 결과에 대해서 복수의 처리가 필요한 경우가 있습니다.
+
+이때는 복수의 함수 호출이 아닌, 함수 호출의 반환값을 ``변수``에 담아서 사용해야 중복된 작업을 제거할 수 있습니다.
+
+예를 들면 다음과 같습니다.
+
+```javascript
+// ``캐싱 변수`` 도입 전
+document.querySelector(".myDiv").style.width = "5px";
+document.querySelector(".myDiv").style.height = "10px";
+```
+
+<br/>
+
+```javascript
+// ``캐싱 변수`` 도입
+const myDiv = document.querySelector(".myDiv");
+myDiv.style.width = "5px";
+myDiv.style.height = "10px";
+```
+
+<br/>
+
+위와같이 ``캐싱 변수``를 사용하게 되면, 특정 요소에 접근하는 ``document.querySelector()``함수를 한번만 실행하게 되므로, 성능을 향상시키는 리팩토링이 됩니다.
+
+
+<br/><br/>
+
+
+### 07-10.
