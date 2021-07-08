@@ -89,7 +89,7 @@ function setChordCountsInLabels() {
     song[1].forEach(chord => {
       if(chordCountsInLabels[song[0]][chord] > 0) {
         // 코드 개수 정보가 있다면, 개수 증가
-        chordCountsInLabels[song[0]][chord] = chordCountsInLabels[song[0]][chord] + 1;
+        chordCountsInLabels[song[0]][chord] += 1;
       } else {
         // 코드 개수 정보가 없다면, 1개 등록
         chordCountsInLabels[song[0]][chord] = 1;
@@ -104,8 +104,7 @@ function setProbabilitiesOfChordsInLabels() {
 
   Object.keys(probabilityOfChordsInLabels).forEach(difficulty => {
     Object.keys(probabilityOfChordsInLabels[difficulty]).forEach(chord => {
-      probabilityOfChordsInLabels[difficulty][chord] = 
-        probabilityOfChordsInLabels[difficulty][chord] / songs.length;
+      probabilityOfChordsInLabels[difficulty][chord] /= songs.length;
     });
   });
 }
