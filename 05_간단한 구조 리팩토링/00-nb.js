@@ -1,8 +1,5 @@
 // NBC(Naive Bayes Classifier: 나이브 베이즈 분류자) 알고리즘을 사용한 리팩토링 연습
 
-// NodeJS의 파일 입출력 라이브러리
-fs = require("fs");
-
 imagine = ["c", "cmaj7", "f", "am", "dm", "g", "e7"];
 
 somwhereOverTheRainbow = ["c", "em", "f", "g", "am"];
