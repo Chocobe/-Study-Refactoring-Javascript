@@ -25,10 +25,10 @@ bulletproof = ["d#m", "g#", "b", "f#", "g#m", "c#"];
 
 let songs = [];
 let allChords = new Set();
-let labelCounts = {};
-let labelProbabilities = {};
-let chordCountsInLabels = [];
-let probabilityOfChordsInLabels = {};
+let labelCounts = new Map();
+let labelProbabilities = new Map();
+let chordCountsInLabels = new Map();
+let probabilityOfChordsInLabels = new Map();
 
 function train(chords, label) {
   songs.push({
@@ -38,30 +38,30 @@ function train(chords, label) {
   
   chords.forEach(chord => allChords.add(chord));
 
-  if(Object.keys(labelCounts).includes(label)) {
-    labelCounts[label] += 1;
+  if(Array.from(labelCounts.keys()).includes(label)) {
+    labelCounts.set(label, labelCounts.get(label) + 1);
   } else {
-    labelCounts[label] = 1;
+    labelCounts.set(label, 1);
   }
 }
 
 function setLabelProbabilities() {
-  Object.keys(labelCounts).forEach(label => {
-    labelProbabilities[label] = labelCounts[label] / songs.length;
+  labelCounts.forEach((_count, label) => {
+    labelProbabilities.set(label, labelCounts.get(label) / songs.length);
   });
 }
 
 function setChordCountsInLabels() {
   songs.forEach(song => {
-    if(chordCountsInLabels[song.label] === undefined) {
-      chordCountsInLabels[song.label] = {};
+    if(chordCountsInLabels.get(song.label) === undefined) {
+      chordCountsInLabels.set(song.label, {});
     }
 
     song.chords.forEach(chord => {
-      if(chordCountsInLabels[song.label][chord] > 0) {
-        chordCountsInLabels[song.label][chord] += 1;
+      if(chordCountsInLabels.get(song.label)[chord] > 0) {
+        chordCountsInLabels.get(song.label)[chord] += 1;
       } else {
-        chordCountsInLabels[song.label][chord] = 1;
+        chordCountsInLabels.get(song.label)[chord] = 1;
       }
     });
   });
@@ -70,9 +70,9 @@ function setChordCountsInLabels() {
 function setProbabilityOfChordsInLabels() {
   probabilityOfChordsInLabels = chordCountsInLabels;
 
-  Object.keys(probabilityOfChordsInLabels).forEach(difficulty => {
-    Object.keys(probabilityOfChordsInLabels[difficulty]).forEach(chord => {
-      probabilityOfChordsInLabels[difficulty][chord] /= songs.length;
+  probabilityOfChordsInLabels.forEach((_chords, difficulty) => {
+    Object.keys(probabilityOfChordsInLabels.get(difficulty)).forEach(chord => {
+      probabilityOfChordsInLabels.get(difficulty)[chord] /= songs.length;
     });
   });
 }
@@ -93,29 +93,30 @@ setLabelProbabilities();
 setChordCountsInLabels();
 setProbabilityOfChordsInLabels();
 
-function classify(chords) {
+function classify2(chords) {
   const smoothing = 1.01;
 
   console.log(labelProbabilities);
 
-  const classified = {};
+  const classified = new Map();
 
-  Object.keys(labelProbabilities).forEach(difficulty => {
-    let first = labelProbabilities[difficulty] + smoothing;
+  labelProbabilities.forEach((_probabilities, difficulty) => {
+    let first = labelProbabilities.get(difficulty) + smoothing;
 
     chords.forEach(chord => {
-      let probabilityOfChordInLabel = probabilityOfChordsInLabels[difficulty][chord];
+      let probabilityOfChordInLabel = probabilityOfChordsInLabels.get(difficulty)[chord];
 
       if(probabilityOfChordInLabel) {
         first *= (probabilityOfChordInLabel + smoothing);
       }
     });
 
-    classified[difficulty] = first;
+    // classified.set(difficulty, first);
+    classified.set(difficulty, first);
   });
 
   console.log(classified);
 }
 
-classify(["d", "g", "e", "dm"]);
-classify(["f#m7", "a", "dadd9", "dmaj7", "bm", "bm7", "d", "f#m"]);
+classify2(["d", "g", "e", "dm"]);
+classify2(["f#m7", "a", "dadd9", "dmaj7", "bm", "bm7", "d", "f#m"]);
