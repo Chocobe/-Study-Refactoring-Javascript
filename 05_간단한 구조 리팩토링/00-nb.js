@@ -64,15 +64,10 @@ function train(chords, label) {
   }
 };
 
-// 노래 개수
-function getNumberOfSongs() {
-  return songs.length;
-}
-
 // 레이블당 선택 확률 계산
 function setLabelProbabilities() {
   Object.keys(labelCounts).forEach(label => {
-    const numberOfSongs = getNumberOfSongs();
+    const numberOfSongs = songs.length;
     labelProbabilities[label] = labelCounts[label] / numberOfSongs;
   });
 }
