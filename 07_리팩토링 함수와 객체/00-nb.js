@@ -1,7 +1,6 @@
 // NBC (Naive Bayes Classifier)
 const classifier = {
   // 셋업 함수
-  // allChords: new Set(),
   labelCounts: new Map(),
   labelProbabilities: new Map(),
   chordCountsInLabels: new Map(),
@@ -78,20 +77,6 @@ const classifier = {
   },
 };
 
-// 노래 목록
-// const songList = {
-//   difficulties: ["easy", "medium", "hard"],
-//   allChords: new Set(),
-//   songs: [],
-//   addSong(name, chords, difficulty) {
-//     this.songs.push({
-//       name,
-//       chords,
-//       difficulty: this.difficulties[difficulty],
-//     });
-//   },
-// };
-
 // 현재 파일명 추출 함수
 function fileName() {
   const theError = new Error("here I am");
@@ -102,31 +87,6 @@ function fileName() {
 function welcomeMessage() {
   return `Welcome to ${fileName()}!`;
 }
-
-// function train(chords, label) {  
-//   chords.forEach(chord => classifier.allChords.add(chord));
-
-//   if(Array.from(classifier.labelCounts.keys()).includes(label)) {
-//     classifier.labelCounts.set(label, classifier.labelCounts.get(label) + 1);
-//   } else {
-//     classifier.labelCounts.set(label, 1);
-//   }
-// }
-
-// function setLabelProbabilities() {
-//   classifier.labelCounts.forEach((_count, label) => {
-//     classifier.labelProbabilities.set(label, classifier.labelCounts.get(label) / songList.songs.length);
-//   });
-// }
-
-// 머신러닝 훈련 통합 함수
-// function trainAll() {
-//   songList.songs.forEach(song => {
-//     train(song.chords, song.difficulty);
-//   });
-
-//   setLabelProbabilities();
-// }
 
 const wish = require("wish");
 
