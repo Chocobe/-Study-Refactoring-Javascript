@@ -7,6 +7,27 @@ const classifier = {
   labelProbabilities: new Map(),
   chordCountsInLabels: new Map(),
   probabilityOfChordsInLabels: new Map(),
+  smoothing: 1.01,
+
+  classify(chords) {
+    const classified = new Map();
+  
+    this.labelProbabilities.forEach((_probabilities, difficulty) => {
+      const totalLikelihood = chords.reduce((total, chord) => {
+        const probabilityOfChordInLabel = this.probabilityOfChordsInLabels.get(difficulty)[chord];
+
+        if(probabilityOfChordInLabel) {
+          return total * (probabilityOfChordInLabel + this.smoothing);
+        } else {
+          return total;
+        }
+      }, this.labelProbabilities.get(difficulty) + this.smoothing);
+  
+      classified.set(difficulty, totalLikelihood);
+    });
+  
+    return classified;
+  },
 };
 
 // 노래 목록
@@ -32,13 +53,6 @@ function fileName() {
 function welcomeMessage() {
   return `Welcome to ${fileName()}!`;
 }
-
-// 난이도 종류 설정 함수
-// function setDifficulties() {
-//   easy = "easy";
-//   medium = "medium";
-//   hard = "hard";
-// }
 
 function train(chords, label) {
   classifier.songs.push({
@@ -96,37 +110,11 @@ function setLabelAndProbabilities() {
 
 // 머신러닝 훈련 통합 함수
 function trainAll() {
-  // setDifficulties();
-  // setSongs();
-
   songList.songs.forEach(song => {
     train(song.chords, song.difficulty);
   });
 
   setLabelAndProbabilities();
-}
-
-function classify(chords) {
-  const smoothing = 1.01;
-
-  const classified = new Map();
-
-  classifier.labelProbabilities.forEach((_probabilities, difficulty) => {
-    let first = classifier.labelProbabilities.get(difficulty) + smoothing;
-
-    chords.forEach(chord => {
-      let probabilityOfChordInLabel = classifier.probabilityOfChordsInLabels.get(difficulty)[chord];
-
-      if(probabilityOfChordInLabel) {
-        first *= (probabilityOfChordInLabel + smoothing);
-      }
-    });
-
-    // classified.set(difficulty, first);
-    classified.set(difficulty, first);
-  });
-
-  return classified;
 }
 
 const wish = require("wish");
@@ -190,11 +178,19 @@ describe("the file", () => {
   
   // classify() 함수의 "특성화 테스트"
   it("classifies", () => {
-    const classified = classify(["f#m7", "a", "dadd9", "dmaj7", "bm", "bm7", "d", "f#m"]);
+    const classified = classifier.classify(["f#m7", "a", "dadd9", "dmaj7", "bm", "bm7", "d", "f#m"]);
 
     wish(classified.get("easy") === 1.3433333333333333);
     wish(classified.get("medium") === 1.5060259259259259);
     wish(classified.get("hard") === 1.6884223991769547);
+  });
+
+  it("classifies again", () => {
+    const classified = classifier.classify(["d", "g", "e", "dm"]);
+
+    wish(classified.get("easy") === 2.023094827160494);
+    wish(classified.get("medium") === 1.855758613168724);
+    wish(classified.get("hard") === 1.855758613168724);
   });
 
   // 환영 메시지 테스트
@@ -207,5 +203,5 @@ describe("the file", () => {
     wish(classifier.labelProbabilities.get("easy") === 0.3333333333333333);
     wish(classifier.labelProbabilities.get("medium") === 0.3333333333333333);
     wish(classifier.labelProbabilities.get("hard") === 0.3333333333333333);
-  })
+  });
 });
