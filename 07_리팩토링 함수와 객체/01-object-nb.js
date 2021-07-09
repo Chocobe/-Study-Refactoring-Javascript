@@ -1,34 +1,35 @@
 // NBC (Naive Bayes Classifier)
-const classifier = {
-  // 셋업 함수
-  labelCounts: new Map(),
-  labelProbabilities: new Map(),
-  chordCountsInLabels: new Map(),
-  smoothing: 1.01,
-
-  songList: {
-    difficulties: ["easy", "medium", "hard"],
-    allChords: new Set(),
-    songs: [],
-    addSong(name, chords, difficulty) {
+const Classifier = function() {
+  function SongList() {
+    this.difficulties = ["easy", "medium", "hard"];
+    this.allChords = new Set();
+    this.songs = [];
+    
+    this.addSong = function(name, chords, difficulty) {
       this.songs.push({
         name,
         chords,
         difficulty: this.difficulties[difficulty],
       });
-    },
-  },
+    }
+  }
 
-  likelihoodFromChord(difficulty, chord) {
+  this.songList = new SongList();
+  this.labelCounts = new Map();
+  this.labelProbabilities = new Map();
+  this.chordCountsInLabels = new Map();
+  this.smoothing = 1.01;
+
+  this.likelihoodFromChord = function(difficulty, chord) {
     return this.chordCountForDifficulty(difficulty, chord) / this.songList.songs.length;
-  },
+  }
 
-  valueForChordDifficulty(difficulty, chord) {
+  this.valueForChordDifficulty = function(difficulty, chord) {
     const value = this.likelihoodFromChord(difficulty, chord);
     return value ? value + this.smoothing : 1;
-  },
+  }
   
-  classify(chords) {
+  this.classify = function(chords) {
     return new Map(Array.from(this.labelProbabilities.entries()).map(labelWithProbability => {
       const difficulty = labelWithProbability[0];
       return [
@@ -38,9 +39,9 @@ const classifier = {
         }, this.labelProbabilities.get(difficulty) + this.smoothing)
       ];
     }));
-  },
+  }
 
-  chordCountForDifficulty(difficulty, testChord) {
+  this.chordCountForDifficulty = function(difficulty, testChord) {
     return this.songList.songs.reduce((counter, song) => {
       if(song.difficulty === difficulty) {
         counter += song.chords.filter((chord) => {
@@ -50,17 +51,17 @@ const classifier = {
 
       return counter;
     }, 0);
-  },
+  }
 
-  trainAll() {
+  this.trainAll = function() {
     this.songList.songs.forEach(song => {
       this.train(song.chords, song.difficulty);
     });
   
     this.setLabelProbabilities();
-  },
+  }
 
-  train(chords, label) {  
+  this.train = function(chords, label) {  
     chords.forEach(chord => this.songList.allChords.add(chord));
   
     if(Array.from(this.labelCounts.keys()).includes(label)) {
@@ -68,13 +69,13 @@ const classifier = {
     } else {
       this.labelCounts.set(label, 1);
     }
-  },
+  }
 
-  setLabelProbabilities() {
+  this.setLabelProbabilities = function() {
     this.labelCounts.forEach((_count, label) => {
       this.labelProbabilities.set(label, this.labelCounts.get(label) / this.songList.songs.length);
     });
-  },
+  }
 };
 
 // 현재 파일명 추출 함수
@@ -91,6 +92,8 @@ function welcomeMessage() {
 const wish = require("wish");
 
 describe("the file", () => {
+  const classifier = new Classifier();
+  
   classifier.songList.addSong(
     "imagine",
     ["c", "cmaj7", "f", "am", "dm", "g", "e7"],
@@ -166,7 +169,7 @@ describe("the file", () => {
 
   // 환영 메시지 테스트
   it("welcomeMessage()", () => {
-    wish(welcomeMessage() === "Welcome to 01-class-nb.js!");
+    wish(welcomeMessage() === "Welcome to 01-object-nb.js!");
   });
 
   // labelProbabilities 특성화 테스트
