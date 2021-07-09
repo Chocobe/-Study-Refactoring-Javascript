@@ -1,7 +1,7 @@
 // NBC (Naive Bayes Classifier)
 const classifier = {
   // 셋업 함수
-  allChords: new Set(),
+  // allChords: new Set(),
   labelCounts: new Map(),
   labelProbabilities: new Map(),
   chordCountsInLabels: new Map(),
@@ -39,11 +39,36 @@ const classifier = {
       return counter;
     }, 0);
   },
+
+  trainAll() {
+    songList.songs.forEach(song => {
+      this.train(song.chords, song.difficulty);
+    });
+  
+    this.setLabelProbabilities();
+  },
+
+  train(chords, label) {  
+    chords.forEach(chord => songList.allChords.add(chord));
+  
+    if(Array.from(this.labelCounts.keys()).includes(label)) {
+      this.labelCounts.set(label, this.labelCounts.get(label) + 1);
+    } else {
+      this.labelCounts.set(label, 1);
+    }
+  },
+
+  setLabelProbabilities() {
+    this.labelCounts.forEach((_count, label) => {
+      this.labelProbabilities.set(label, this.labelCounts.get(label) / songList.songs.length);
+    });
+  },
 };
 
 // 노래 목록
 const songList = {
   difficulties: ["easy", "medium", "hard"],
+  allChords: new Set(),
   songs: [],
   addSong(name, chords, difficulty) {
     this.songs.push({
@@ -65,30 +90,30 @@ function welcomeMessage() {
   return `Welcome to ${fileName()}!`;
 }
 
-function train(chords, label) {  
-  chords.forEach(chord => classifier.allChords.add(chord));
+// function train(chords, label) {  
+//   chords.forEach(chord => classifier.allChords.add(chord));
 
-  if(Array.from(classifier.labelCounts.keys()).includes(label)) {
-    classifier.labelCounts.set(label, classifier.labelCounts.get(label) + 1);
-  } else {
-    classifier.labelCounts.set(label, 1);
-  }
-}
+//   if(Array.from(classifier.labelCounts.keys()).includes(label)) {
+//     classifier.labelCounts.set(label, classifier.labelCounts.get(label) + 1);
+//   } else {
+//     classifier.labelCounts.set(label, 1);
+//   }
+// }
 
-function setLabelProbabilities() {
-  classifier.labelCounts.forEach((_count, label) => {
-    classifier.labelProbabilities.set(label, classifier.labelCounts.get(label) / songList.songs.length);
-  });
-}
+// function setLabelProbabilities() {
+//   classifier.labelCounts.forEach((_count, label) => {
+//     classifier.labelProbabilities.set(label, classifier.labelCounts.get(label) / songList.songs.length);
+//   });
+// }
 
 // 머신러닝 훈련 통합 함수
-function trainAll() {
-  songList.songs.forEach(song => {
-    train(song.chords, song.difficulty);
-  });
+// function trainAll() {
+//   songList.songs.forEach(song => {
+//     train(song.chords, song.difficulty);
+//   });
 
-  setLabelProbabilities();
-}
+//   setLabelProbabilities();
+// }
 
 const wish = require("wish");
 
@@ -147,7 +172,7 @@ describe("the file", () => {
     2,
   );
 
-  trainAll();
+  classifier.trainAll();
   
   // classify() 함수의 "특성화 테스트"
   it("classifies", () => {
