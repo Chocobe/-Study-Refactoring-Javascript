@@ -11,12 +11,13 @@ const classifier = {
 
 // 노래 목록
 const songList = {
+  difficulties: ["easy", "medium", "hard"],
   songs: [],
   addSong(name, chords, difficulty) {
     this.songs.push({
       name,
       chords,
-      difficulty,
+      difficulty: this.difficulties[difficulty],
     });
   },
 };
@@ -33,66 +34,70 @@ function welcomeMessage() {
 }
 
 // 난이도 종류 설정 함수
-function setDifficulties() {
-  easy = "easy";
-  medium = "medium";
-  hard = "hard";
-}
+// function setDifficulties() {
+//   easy = "easy";
+//   medium = "medium";
+//   hard = "hard";
+// }
 
 // 노래 설정 함수
 function setSongs() {
+  // const easy = "easy";
+  // const medium = "medium";
+  // const hard = "hard";
+  
   songList.addSong(
     "imagine",
     ["c", "cmaj7", "f", "am", "dm", "g", "e7"],
-    easy,
+    0,
   );
 
   songList.addSong(
     "somewhereOverTheRainbow",
     ["c", "em", "f", "g", "am"],
-    easy,
+    0,
   );
 
   songList.addSong(
     "tooManyCooks",
     ["c", "g", "f"],
-    easy,
+    0,
   );
 
   songList.addSong(
     "iWillFollowYouIntoTheDark",
     ["f", "dm", "bb", "c", "a", "bbm"],
-    medium,
+    1,
   );
 
   songList.addSong(
     "babyOneMoreTime",
     ["cm", "g", "bb", "eb", "fm", "ab"],
-    medium,
+    1,
   );
 
   songList.addSong(
     "creep",
     ["g", "gsus4", "c", "cmsus4", "cm6"],
-    medium,
+    1,
   );
 
   songList.addSong(
     "paperBag",
     ["bm7", "e", "c", "g", "b7", "f", "em", "a", "cmaj7", "em7", "a7", "f7", "b"],
-    hard,
+    2,
   );
 
   songList.addSong(
     "toxic",
     ["cm", "eb", "g", "cdim", "eb7", "d7", "db7", "ab", "gmaj7", "g7"],
-    hard,
+    2,
   );
 
   songList.addSong(
     "bulletproof",
     ["d#m", "g#", "b", "f#", "g#m", "c#"],
-    hard,
+    2,
   );
 }
 
@@ -152,7 +157,7 @@ function setLabelAndProbabilities() {
 
 // 머신러닝 훈련 통합 함수
 function trainAll() {
-  setDifficulties();
+  // setDifficulties();
   setSongs();
 
   songList.songs.forEach(song => {
@@ -194,9 +199,9 @@ describe("the file", () => {
   it("classifies", () => {
     const classified = classify(["f#m7", "a", "dadd9", "dmaj7", "bm", "bm7", "d", "f#m"]);
 
-    wish(classified.get(easy) === 1.3433333333333333);
-    wish(classified.get(medium) === 1.5060259259259259);
-    wish(classified.get(hard) === 1.6884223991769547);
+    wish(classified.get("easy") === 1.3433333333333333);
+    wish(classified.get("medium") === 1.5060259259259259);
+    wish(classified.get("hard") === 1.6884223991769547);
   });
 
   // 환영 메시지 테스트
@@ -206,8 +211,8 @@ describe("the file", () => {
 
   // labelProbabilities 특성화 테스트
   it("label probabilities", () => {
-    wish(classifier.labelProbabilities.get(easy) === 0.3333333333333333);
-    wish(classifier.labelProbabilities.get(medium) === 0.3333333333333333);
-    wish(classifier.labelProbabilities.get(hard) === 0.3333333333333333);
+    wish(classifier.labelProbabilities.get("easy") === 0.3333333333333333);
+    wish(classifier.labelProbabilities.get("medium") === 0.3333333333333333);
+    wish(classifier.labelProbabilities.get("hard") === 0.3333333333333333);
   })
 });
