@@ -8,7 +8,7 @@ const classifier = {
   smoothing: 1.01,
 
   likelihoodFromChord(difficulty, chord) {
-    return this.chordCountsInLabels.get(difficulty)[chord] / songList.songs.length;
+    return this.chordCountForDifficulty(difficulty, chord) / songList.songs.length;
   },
 
   valueForChordDifficulty(difficulty, chord) {
@@ -26,6 +26,18 @@ const classifier = {
         }, this.labelProbabilities.get(difficulty) + this.smoothing)
       ];
     }));
+  },
+
+  chordCountForDifficulty(difficulty, testChord) {
+    return songList.songs.reduce((counter, song) => {
+      if(song.difficulty === difficulty) {
+        counter += song.chords.filter((chord) => {
+          return chord === testChord;
+        }).length;
+      }
+
+      return counter;
+    }, 0);
   },
 };
 
@@ -69,35 +81,13 @@ function setLabelProbabilities() {
   });
 }
 
-function setChordCountsInLabels() {
-  songList.songs.forEach(song => {
-    if(classifier.chordCountsInLabels.get(song.difficulty) === undefined) {
-      classifier.chordCountsInLabels.set(song.difficulty, {});
-    }
-
-    song.chords.forEach(chord => {
-      if(classifier.chordCountsInLabels.get(song.difficulty)[chord] > 0) {
-        classifier.chordCountsInLabels.get(song.difficulty)[chord] += 1;
-      } else {
-        classifier.chordCountsInLabels.get(song.difficulty)[chord] = 1;
-      }
-    });
-  });
-}
-
-// 레이블과 확률 설정 함수
-function setLabelAndProbabilities() {
-  setLabelProbabilities();
-  setChordCountsInLabels();
-}
-
 // 머신러닝 훈련 통합 함수
 function trainAll() {
   songList.songs.forEach(song => {
     train(song.chords, song.difficulty);
   });
 
-  setLabelAndProbabilities();
+  setLabelProbabilities();
 }
 
 const wish = require("wish");
