@@ -6,11 +6,14 @@ const classifier = {
   labelCounts: new Map(),
   labelProbabilities: new Map(),
   chordCountsInLabels: new Map(),
-  probabilityOfChordsInLabels: new Map(),
   smoothing: 1.01,
 
+  likelihoodFromChord(difficulty, chord) {
+    return this.chordCountsInLabels.get(difficulty)[chord] / this.songs.length;
+  },
+
   valueForChordDifficulty(difficulty, chord) {
-    const value = this.probabilityOfChordsInLabels.get(difficulty)[chord];
+    const value = this.likelihoodFromChord(difficulty, chord);
     return value ? value + this.smoothing : 1;
   },
   
@@ -88,21 +91,10 @@ function setChordCountsInLabels() {
   });
 }
 
-function setProbabilityOfChordsInLabels() {
-  classifier.probabilityOfChordsInLabels = classifier.chordCountsInLabels;
-
-  classifier.probabilityOfChordsInLabels.forEach((_chords, difficulty) => {
-    Object.keys(classifier.probabilityOfChordsInLabels.get(difficulty)).forEach(chord => {
-      classifier.probabilityOfChordsInLabels.get(difficulty)[chord] /= classifier.songs.length;
-    });
-  });
-}
-
 // 레이블과 확률 설정 함수
 function setLabelAndProbabilities() {
   setLabelProbabilities();
   setChordCountsInLabels();
-  setProbabilityOfChordsInLabels();
 }
 
 // 머신러닝 훈련 통합 함수
@@ -172,6 +164,9 @@ describe("the file", () => {
   );
 
   trainAll();
+
+  console.log(classifier.probabilityOfChordsInLabels);
+  console.log(classifier.chordCountsInLabels);
   
   // classify() 함수의 "특성화 테스트"
   it("classifies", () => {
