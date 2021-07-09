@@ -7,8 +7,21 @@ const classifier = {
   chordCountsInLabels: new Map(),
   smoothing: 1.01,
 
+  songList: {
+    difficulties: ["easy", "medium", "hard"],
+    allChords: new Set(),
+    songs: [],
+    addSong(name, chords, difficulty) {
+      this.songs.push({
+        name,
+        chords,
+        difficulty: this.difficulties[difficulty],
+      });
+    },
+  },
+
   likelihoodFromChord(difficulty, chord) {
-    return this.chordCountForDifficulty(difficulty, chord) / songList.songs.length;
+    return this.chordCountForDifficulty(difficulty, chord) / this.songList.songs.length;
   },
 
   valueForChordDifficulty(difficulty, chord) {
@@ -29,7 +42,7 @@ const classifier = {
   },
 
   chordCountForDifficulty(difficulty, testChord) {
-    return songList.songs.reduce((counter, song) => {
+    return this.songList.songs.reduce((counter, song) => {
       if(song.difficulty === difficulty) {
         counter += song.chords.filter((chord) => {
           return chord === testChord;
@@ -41,7 +54,7 @@ const classifier = {
   },
 
   trainAll() {
-    songList.songs.forEach(song => {
+    this.songList.songs.forEach(song => {
       this.train(song.chords, song.difficulty);
     });
   
@@ -49,7 +62,7 @@ const classifier = {
   },
 
   train(chords, label) {  
-    chords.forEach(chord => songList.allChords.add(chord));
+    chords.forEach(chord => this.songList.allChords.add(chord));
   
     if(Array.from(this.labelCounts.keys()).includes(label)) {
       this.labelCounts.set(label, this.labelCounts.get(label) + 1);
@@ -60,24 +73,24 @@ const classifier = {
 
   setLabelProbabilities() {
     this.labelCounts.forEach((_count, label) => {
-      this.labelProbabilities.set(label, this.labelCounts.get(label) / songList.songs.length);
+      this.labelProbabilities.set(label, this.labelCounts.get(label) / this.songList.songs.length);
     });
   },
 };
 
 // 노래 목록
-const songList = {
-  difficulties: ["easy", "medium", "hard"],
-  allChords: new Set(),
-  songs: [],
-  addSong(name, chords, difficulty) {
-    this.songs.push({
-      name,
-      chords,
-      difficulty: this.difficulties[difficulty],
-    });
-  },
-};
+// const songList = {
+//   difficulties: ["easy", "medium", "hard"],
+//   allChords: new Set(),
+//   songs: [],
+//   addSong(name, chords, difficulty) {
+//     this.songs.push({
+//       name,
+//       chords,
+//       difficulty: this.difficulties[difficulty],
+//     });
+//   },
+// };
 
 // 현재 파일명 추출 함수
 function fileName() {
@@ -118,55 +131,55 @@ function welcomeMessage() {
 const wish = require("wish");
 
 describe("the file", () => {
-  songList.addSong(
+  classifier.songList.addSong(
     "imagine",
     ["c", "cmaj7", "f", "am", "dm", "g", "e7"],
     0,
   );
 
-  songList.addSong(
+  classifier.songList.addSong(
     "somewhereOverTheRainbow",
     ["c", "em", "f", "g", "am"],
     0,
   );
 
-  songList.addSong(
+  classifier.songList.addSong(
     "tooManyCooks",
     ["c", "g", "f"],
     0,
   );
 
-  songList.addSong(
+  classifier.songList.addSong(
     "iWillFollowYouIntoTheDark",
     ["f", "dm", "bb", "c", "a", "bbm"],
     1,
   );
 
-  songList.addSong(
+  classifier.songList.addSong(
     "babyOneMoreTime",
     ["cm", "g", "bb", "eb", "fm", "ab"],
     1,
   );
 
-  songList.addSong(
+  classifier.songList.addSong(
     "creep",
     ["g", "gsus4", "c", "cmsus4", "cm6"],
     1,
   );
 
-  songList.addSong(
+  classifier.songList.addSong(
     "paperBag",
     ["bm7", "e", "c", "g", "b7", "f", "em", "a", "cmaj7", "em7", "a7", "f7", "b"],
     2,
   );
 
-  songList.addSong(
+  classifier.songList.addSong(
     "toxic",
     ["cm", "eb", "g", "cdim", "eb7", "d7", "db7", "ab", "gmaj7", "g7"],
     2,
   );
 
-  songList.addSong(
+  classifier.songList.addSong(
     "bulletproof",
     ["d#m", "g#", "b", "f#", "g#m", "c#"],
     2,
