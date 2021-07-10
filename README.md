@@ -663,4 +663,150 @@ Javascript에는 여러가지의 반복문을 사용할 수 있습니다.
 
 
 
-## 08. 리팩토링 함수와 객체
+## 08. 개층구조 내부의 리팩토링
+
+동일한 ``scope``에서 변수와 함수를 작성하여 프로그램을 작성할 수 있습니다.
+
+하지만, 이렇게 작성된 코드는 재사용이 불편하고 구조가 잡히지 않습니다.
+
+따라서, 하나의 객체 또는 클래스를 사용하여, 데이터를 구조화 하고 상속 등을 사용하여 코드의 재사용성을 늘릴 수 있습니다.
+
+
+<br/><br/>
+
+
+### 08-01. 계층구조 구축하기
+
+계층구조를 만들기 위해, ``생성자 함수`` 또는 ``class``를 사용할 수 있습니다.
+
+다음은 ``class``를 사용한 예시 입니다.
+
+```javascript
+class Person {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  printInfo() {
+    console.log(`이름: ${this.name}, 나이: ${this.age}`);
+  }
+}
+
+const kim = new Person("kim", 35); // 이름: kim, 나이: 35
+```
+
+<br/>
+
+위 코드는 ``Person`` 클래스를 사용하여 객체를 생성 합니다.
+
+위 코드로도 이미 재사용와 구조에 대한 이점이 많습니다.
+
+새로운 ``Person`` 객체를 생성하기도 좋고, ``Person``객체 내부와 관련된 메서드도 제공하고 있습니다.
+
+<br/>
+
+여기서 ``Person`` 클래스를 상속하여, 국가에 대한 정보까지 가지는 객체를 만들고자 하면, ``Person``을 ``상속``받는 ``class``를 작성하면, 코드의 재사용을 높여서 만들 수 있습니다.
+
+다음은 한국인과 미국인에 대한 ``class``를 작성한 예시 입니다.
+
+```javascript
+class Person {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  printInfo() {
+    console.log(`이름: ${this.name}, 나이: ${this.age}`);
+  }
+}
+
+// 한국인 class
+class Korean extends Person {
+  constructor(name, age, country) {
+    super(name, age);
+    this.country = country;
+  }
+
+  printInfo() {
+    console.log(`이름: ${this.name}, 나이: ${this.age}, 국적: ${this.country}`);
+  }
+}
+
+// 미국인 class
+class American extends Person {
+  contructor(name, age, country) {
+    super(name, age);
+    this.country = country;
+  }
+
+  printInfo() {
+    console.log(`이름: ${this.name}, 나이: ${this.age}, 국적: ${this.country}`);
+  }
+}
+
+const korean = new Korean("kim", 35, "한국");
+korean.printInfo(); // 이름: kim, 나이: 35, 국적: 한국
+
+const american = new American("bob", 40, "미국");
+american.printInfo(); // 이름: bob, 나이: 40, 국적: 미국
+```
+
+<br/>
+
+위와 같이 ``Person``를 재사용하여 ``Korean``과 ``American`` 클래스를 만들 수 있습니다.
+
+``Person``과 동일하지만, ``country``라는 데이터가 확장된 형태로 만들 수 있게 되었습니다.
+
+<br/>
+
+현재 ``printInf()``함수를 보면, ``Korean``과 ``American``에 중복된 코드라는 것을 알 수 있습니다.
+
+이러한 경우는 ``상위 클래스(Person)``에서 이를 처리하면 중복 코드를 제거할 수 있는 경우도 있습니다.
+
+다음 코드는 ``country`` 데이터를 ``상위 클래스(Person)``에서 처리하므로써, ``Korean``과 ``American``의 ``printInfo()`` 중복코드를 제거한 방법 입니다.
+
+```javascript
+class Person {
+  constructor(name, age, country) {
+    this.name = name;
+    this.age = age;
+    this.country = country;
+  }
+
+  printInfo() {
+    console.log(`이름: ${this.name}, 나이: ${this.age}, 국적: ${this.country}`);
+  }
+}
+
+class Korean extends Person {
+  constructor(name, age) {
+    super(name, age, "한국");
+  }
+}
+
+class American extends Person {
+  constructor(name, age) {
+    super(name, age, "미국");
+  }
+}
+
+const korean = new Korean("kim", 35);
+korean.printInfo(); // 이름: kim, 나이: 35, 국적: 한국
+
+const american = new American("bob", 40);
+american.printInfo(); // 이름: bob, 나이: 40, 국적: 미국
+```
+
+<br/>
+
+여기서 주의할 점은, 단순 기능을 상위, 하위 클래스에 분산하여 처리하면, 코드를 파악하기 어려워 질 수 있습니다.
+
+즉, 상위 클래스에서 전임을 할지, 하위 클래스에서 전임을 할지에 대한 설계를 생각해야 좋은 계층구조를 만들 수 있습니다.
+
+
+<br/><br/>
+
+
+## 08-02.
